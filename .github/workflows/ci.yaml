@@ -23,7 +23,7 @@ jobs:
         run: poetry install -E cli
 
       - name: Run tests
-        run: poetry run pytest --cov=fast_json_pointer --cov-report lcov tests/ --doctest-modules src/
+        run: poetry run pytest --cov=fast_json_pointer --cov-report=lcov --doctest-modules tests/ src/
 
       - name: Coveralls
         uses: coverallsapp/github-action@master

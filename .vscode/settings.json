@@ -1,0 +1,7 @@
+{
+    "python.testing.pytestArgs": [
+        "--cov=fast_json_pointer",  "--cov-report=lcov", "--doctest-modules", "tests/", "src/"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}

@@ -129,7 +129,10 @@ def _set_ref(doc: JsonType, part: str, value: JsonType) -> None:
             doc[part] = value
         case list():
             part_idx = int(part)
-            doc[part_idx] = value
+            if len(doc) == part_idx:
+                doc.append(value)
+            else:
+                doc[part_idx] = value
         case _:
             raise RuntimeError(f"Unnavigable type {type(doc)}")
 
@@ -157,10 +160,15 @@ def add(
     >>> obj
     {'x': 'foo'}
 
-    >>> obj = {'x': 2}
-    >>> add(obj, "/x", 'foo', rel="1/y")
+    >>> obj = {'x': [0]}
+    >>> add(obj, "/x", 'foo', rel="0/1")
     >>> obj
-    {'x': 2, 'y': 'foo'}
+    {'x': [0, 'foo']}
+    
+    >>> obj = {'x': [0]}
+    >>> add(obj, "/x", 'foo', rel="0/-")
+    >>> obj
+    {'x': [0, 'foo']}
     """
 
     match pointer:
@@ -194,6 +202,11 @@ def remove(doc, pointer: str | JsonPointer,  *, rel: str | RelativeJsonPointer |
     >>> remove(obj, "/x")
     >>> obj
     {}
+
+    >>> obj = {'x': [0, 1, 2]}
+    >>> remove(obj, "/x", rel="0/2")
+    >>> obj
+    {'x': [0, 1]}
     '''
     match pointer:
         case str():
@@ -224,6 +237,16 @@ def replace(doc, pointer: str | JsonPointer, value: JsonType, *, rel: str | Rela
     >>> replace(obj, "/x", ['foo'])
     >>> obj
     {'x': ['foo']}
+
+    >>> obj = {'x': 2}
+    >>> replace(obj, "", ['foo'], rel="0/x")
+    >>> obj
+    {'x': ['foo']}
+    
+    >>> obj = [0, 1, 2]
+    >>> replace(obj, "/2", 'foo')
+    >>> obj
+    [0, 1, 'foo']
     '''
     
     match pointer:
@@ -244,7 +267,7 @@ def replace(doc, pointer: str | JsonPointer, value: JsonType, *, rel: str | Rela
         case dict():
             parent.doc[part] = value
         case list():
-            parent.doc.insert(int(part), value)
+            parent.doc[int(part)] = value
         case _:
             raise RuntimeError()
 
