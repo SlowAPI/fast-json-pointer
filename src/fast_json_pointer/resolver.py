@@ -35,7 +35,9 @@ def _resolve_ref(doc: JsonType, part: str) -> JsonType:
             raise ResolutionException(f"Unnvaigable doc type '{type(part)}'")
 
 
-def _resolve(doc: JsonType, pointer: JsonPointer, *, base_pointer: JsonPointer | None = None) -> list[JsonRef]:
+def _resolve(
+    doc: JsonType, pointer: JsonPointer, *, base_pointer: JsonPointer | None = None
+) -> list[JsonRef]:
     doc_pointer = JsonPointer([]) if base_pointer is None else base_pointer
     doc_refs = [JsonRef(doc, doc_pointer)]
 
@@ -55,7 +57,6 @@ def _resolve(doc: JsonType, pointer: JsonPointer, *, base_pointer: JsonPointer |
     return doc_refs
 
 
-
 def resolve(
     doc: JsonType, pointer: JsonPointer, *, rel: RelativeJsonPointer | None = None
 ) -> list[JsonRef]:
@@ -66,7 +67,7 @@ def resolve(
             doc_refs = doc_refs[: -rel.offset]
 
         last_ref = doc_refs[-1]
-        
+
         if rel.is_index_ref:
             return doc_refs + [JsonRef(last_ref.pointer.parts[-1], last_ref.pointer)]
 
@@ -74,7 +75,6 @@ def resolve(
         doc_refs.extend(new_refs)
 
     return doc_refs
-
 
 
 def get(
@@ -164,7 +164,7 @@ def add(
     >>> add(obj, "/x", 'foo', rel="0/1")
     >>> obj
     {'x': [0, 'foo']}
-    
+
     >>> obj = {'x': [0]}
     >>> add(obj, "/x", 'foo', rel="0/-")
     >>> obj
@@ -196,8 +196,10 @@ def add(
     _set_ref(parent, part, value)
 
 
-def remove(doc, pointer: str | JsonPointer,  *, rel: str | RelativeJsonPointer | None = None) -> None:
-    '''
+def remove(
+    doc, pointer: str | JsonPointer, *, rel: str | RelativeJsonPointer | None = None
+) -> None:
+    """
     >>> obj = {'x': 2}
     >>> remove(obj, "/x")
     >>> obj
@@ -207,7 +209,7 @@ def remove(doc, pointer: str | JsonPointer,  *, rel: str | RelativeJsonPointer |
     >>> remove(obj, "/x", rel="0/2")
     >>> obj
     {'x': [0, 1]}
-    '''
+    """
     match pointer:
         case str():
             pointer = JsonPointer.parse(pointer)
@@ -229,10 +231,16 @@ def remove(doc, pointer: str | JsonPointer,  *, rel: str | RelativeJsonPointer |
             del parent.doc[int(part)]
         case _:
             raise RuntimeError()
-    
 
-def replace(doc, pointer: str | JsonPointer, value: JsonType, *, rel: str | RelativeJsonPointer | None = None) -> None:
-    '''
+
+def replace(
+    doc,
+    pointer: str | JsonPointer,
+    value: JsonType,
+    *,
+    rel: str | RelativeJsonPointer | None = None,
+) -> None:
+    """
     >>> obj = {'x': 2}
     >>> replace(obj, "/x", ['foo'])
     >>> obj
@@ -242,13 +250,13 @@ def replace(doc, pointer: str | JsonPointer, value: JsonType, *, rel: str | Rela
     >>> replace(obj, "", ['foo'], rel="0/x")
     >>> obj
     {'x': ['foo']}
-    
+
     >>> obj = [0, 1, 2]
     >>> replace(obj, "/2", 'foo')
     >>> obj
     [0, 1, 'foo']
-    '''
-    
+    """
+
     match pointer:
         case str():
             pointer = JsonPointer.parse(pointer)
@@ -272,35 +280,55 @@ def replace(doc, pointer: str | JsonPointer, value: JsonType, *, rel: str | Rela
             raise RuntimeError()
 
 
-def move(doc, from_: str | JsonPointer, pointer: str | JsonPointer, *, rel: str | RelativeJsonPointer | None = None, from_rel: str | RelativeJsonPointer | None = None) -> None:
-    '''
+def move(
+    doc,
+    from_: str | JsonPointer,
+    pointer: str | JsonPointer,
+    *,
+    rel: str | RelativeJsonPointer | None = None,
+    from_rel: str | RelativeJsonPointer | None = None,
+) -> None:
+    """
     >>> obj = {'x': 2}
     >>> move(obj, "/x", "/y")
     >>> obj
     {'y': 2}
-    '''
-    
+    """
+
     obj = get(doc, from_, rel=from_rel)
     remove(doc, from_, rel=from_rel)
     add(doc, pointer, obj, rel=rel)
 
 
-def copy(doc, from_: str | JsonPointer, pointer: str | JsonPointer, *, rel: str | RelativeJsonPointer | None = None, from_rel: str | RelativeJsonPointer | None = None) -> None:
-    '''
+def copy(
+    doc,
+    from_: str | JsonPointer,
+    pointer: str | JsonPointer,
+    *,
+    rel: str | RelativeJsonPointer | None = None,
+    from_rel: str | RelativeJsonPointer | None = None,
+) -> None:
+    """
     >>> obj = {'x': 2}
     >>> copy(obj, "/x", "/y")
     >>> obj
     {'x': 2, 'y': 2}
-    '''
+    """
     obj = get(doc, from_, rel=from_rel)
     add(doc, pointer, obj, rel=rel)
 
 
-def test(doc, pointer: str | JsonPointer, value: JsonType, *, rel: str | RelativeJsonPointer | None = None) -> bool:
-    '''
+def test(
+    doc,
+    pointer: str | JsonPointer,
+    value: JsonType,
+    *,
+    rel: str | RelativeJsonPointer | None = None,
+) -> bool:
+    """
     >>> obj = {'x': 2}
     >>> test(obj, "/x", 2)
     True
-    '''
+    """
     obj = get(doc, pointer, rel=rel)
     return obj == value
