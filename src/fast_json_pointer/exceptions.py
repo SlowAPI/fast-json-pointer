@@ -22,9 +22,13 @@ class ResolutionException(JsonPointerException):
     """Failure occurred while resolving a json pointer."""
 
     def __init__(self, *args, refs: list[JsonRef], remaining: list[Operation]) -> None:
+        super().__init__(*args)
         self.refs = refs
         self.remaining = remaining
 
 
 class EndOfArrayException(ResolutionException):
     """Reference pointed to the end of a array."""
+
+class ActionError(JsonPointerException):
+    '''Failed to execute action'''

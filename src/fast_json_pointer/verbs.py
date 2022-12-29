@@ -1,16 +1,16 @@
 from . import low_verbs
 from .jsontypes import JsonType
 from .pointer import JsonPointer, RelativeJsonPointer
-from .resolver import Operation, compile
+from .resolver import Operation, compile, JsonResolver
 
 
 def _compile(
     pointer: str | JsonPointer, rel: str | RelativeJsonPointer | None = None
-) -> list[Operation]:
+) -> JsonResolver:
     if rel is not None:
-        return compile(pointer, rel)
+        return JsonResolver.compile(pointer, rel)
     else:
-        return compile(pointer)
+        return JsonResolver.compile(pointer)
 
 
 def get(

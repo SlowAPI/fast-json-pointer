@@ -1,8 +1,12 @@
 from dataclasses import dataclass
 from typing import *
 
-from .exceptions import (CompilationException, EndOfArrayException,
-                         ParseException, ResolutionException)
+from .exceptions import (
+    CompilationException,
+    EndOfArrayException,
+    ParseException,
+    ResolutionException,
+)
 from .jsontypes import JsonType
 from .pointer import JsonPointer, RelativeJsonPointer
 
@@ -118,6 +122,23 @@ def resolve(doc: JsonType, operations: list[Operation]) -> ResolveResult:
                 )
 
     return ResolveResult(refs, value=cur_doc)
+
+
+@dataclass
+class JsonResolver:
+    operations: list[Operation]
+    is_index_ref: bool
+
+    @classmethod
+    def compile(cls, *pointers: str | JsonPointer | RelativeJsonPointer) -> Self:
+        ops = compile(*pointers)
+        is_index_ref = isinstance(ops[-1], DoIndex) if ops else False
+
+        return cls(ops, is_index_ref)
+
+    def resolve(self, doc: JsonType) -> ResolveResult:
+        return resolve(doc, self.operations)
+        
 
 
 def compile(*pointers: str | JsonPointer | RelativeJsonPointer) -> list[Operation]:
