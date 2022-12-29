@@ -1,15 +1,6 @@
-from dataclasses import dataclass
-from typing import *
-
-from .exceptions import (
-    CompilationException,
-    EndOfArrayException,
-    ParseException,
-    ActionError,
-    ResolutionException,
-)
-from .jsontypes import JsonType, JsonObj, JsonArr
-from .resolver import Operation, resolve, JsonResolver
+from .exceptions import ActionError, ResolutionException
+from .jsontypes import JsonType
+from .resolver import JsonResolver
 
 
 def get(doc: JsonType, path: JsonResolver) -> JsonType:
@@ -25,7 +16,7 @@ def add(doc: JsonType, path: JsonResolver, value: JsonType) -> None:
         result = path.resolve(doc)
     except ResolutionException as e:
         if len(e.remaining) > 1:
-            raise ActionError("Can't add more than one level of doc")
+            raise ActionError("Can't add object, path doesn't exist")
 
         parent = e.refs[-1].doc
         step = e.remaining[0].step
@@ -45,7 +36,7 @@ def add(doc: JsonType, path: JsonResolver, value: JsonType) -> None:
                 parent.append(value)
             else:
                 part_idx = int(step)
-                if  len(parent) == part_idx:
+                if len(parent) == part_idx:
                     parent.append(value)
                 else:
                     parent[part_idx] = value

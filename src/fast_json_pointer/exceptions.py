@@ -30,5 +30,6 @@ class ResolutionException(JsonPointerException):
 class EndOfArrayException(ResolutionException):
     """Reference pointed to the end of a array."""
 
+
 class ActionError(JsonPointerException):
-    '''Failed to execute action'''
+    """Failed to execute action"""

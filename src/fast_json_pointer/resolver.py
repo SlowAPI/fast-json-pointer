@@ -138,7 +138,6 @@ class JsonResolver:
 
     def resolve(self, doc: JsonType) -> ResolveResult:
         return resolve(doc, self.operations)
-        
 
 
 def compile(*pointers: str | JsonPointer | RelativeJsonPointer) -> list[Operation]:

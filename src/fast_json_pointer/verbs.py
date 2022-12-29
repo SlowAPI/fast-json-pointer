@@ -1,7 +1,7 @@
 from . import low_verbs
 from .jsontypes import JsonType
 from .pointer import JsonPointer, RelativeJsonPointer
-from .resolver import Operation, compile, JsonResolver
+from .resolver import JsonResolver, Operation, compile
 
 
 def _compile(
@@ -153,6 +153,7 @@ def move(
     """
     >>> obj = {'x': 2}
     >>> move(obj, "/x", "/y")
+    2
     >>> obj
     {'y': 2}
     """
@@ -172,6 +173,7 @@ def copy(
     """
     >>> obj = {'x': 2}
     >>> copy(obj, "/x", "/y")
+    2
     >>> obj
     {'x': 2, 'y': 2}
     """
